@@ -1,7 +1,5 @@
-[package]
-name = "NetSafer"
-version = "0.1.0"
-authors = ["Matheus Catarino <matheus-catarino@hotmail.com>"]
-edition = "2018"
-
-[dependencies]
+[workspace]
+members = [
+    "server",
+	"client",
+]
