@@ -50,8 +50,13 @@ find_package(Threads REQUIRED)
 include_directories(${ASIO_PATH}/asio/include)
 include_directories(${CXXOPTS_PATH}/include)
 
+if(WIN32)
+    find_library(WINSOCK_LIBRARY ws2_32 REQUIRED)
+endif()
+
 add_executable(netsafer src/main.cpp)
 target_link_libraries(netsafer
     PUBLIC stx
     PRIVATE $<TARGET_NAME_IF_EXISTS:Threads::Threads>
+    $<TARGET_NAME_IF_EXISTS:${WINSOCK_LIBRARY}>
 )
