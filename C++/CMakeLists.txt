@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.14 FATAL_ERROR)
 
 project(Example)
 
-set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 
@@ -40,23 +40,33 @@ set(CXXOPTS_PATH ${opts_SOURCE_DIR})
 
 message(STATUS "CXXOPTS =>  Downloaded")
 FetchContent_MakeAvailable(opts)
-message(STATUS "STX     =>  Downloaded")
-FetchContent_MakeAvailable(stx)
 message(STATUS "ASIO    =>  Downloaded")
 FetchContent_MakeAvailable(asio)
+message(STATUS "STX     =>  Downloaded")
+FetchContent_MakeAvailable(stx)
 message(STATUS "-----------------------------------------")
 
+find_program(IWYU_PATH NAMES include-what-you-use iwyu)
+if(NOT IWYU_PATH)
+  message(FATAL_ERROR "Could not find the program include-what-you-use")
+endif()
+set(CMAKE_CXX_INCLUDE_WHAT_YOU_USE ${IWYU_PATH})
+set(CMAKE_C_INCLUDE_WHAT_YOU_USE ${IWYU_PATH})
+
 find_package(Threads REQUIRED)
+if(WIN32)
+    link_libraries(ws2_32 wmsock)
+endif()
 include_directories(${ASIO_PATH}/asio/include)
 include_directories(${CXXOPTS_PATH}/include)
+include_directories(headers)
 
-if(WIN32)
-    find_library(WINSOCK_LIBRARY ws2_32 REQUIRED)
-endif()
-
-add_executable(netsafer src/main.cpp)
+add_executable(netsafer
+    headers/networking.hpp
+    src/networking.cpp
+    src/main.cpp
+)
 target_link_libraries(netsafer
     PUBLIC stx
     PRIVATE $<TARGET_NAME_IF_EXISTS:Threads::Threads>
-    $<TARGET_NAME_IF_EXISTS:${WINSOCK_LIBRARY}>
 )
