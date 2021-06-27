@@ -1,2 +1,2 @@
-# NetSafer
-Rust projects based networking study
+# Net-Test
+Rust & C++ projects based networking study
